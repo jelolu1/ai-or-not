@@ -6,19 +6,18 @@ import { btnIA, btnNotIA } from "./styles/components-styles";
 const images = [
   {
     id: 0,
-    name: "ai-renaissance-painting-of-a-woman.png",
+    name: "images/ai-renaissance-painting-of-a-woman.png",
     type: "ia",
   },
   {
     id: 1,
-    name: "ai-il_1588xN.2811472517_o01v.webp",
+    name: "images/ai-il_1588xN.2811472517_o01v.webp",
     type: "ia",
   }
 ]
 
 function App() {
   const [gameStatus, setGameStatus] = useState("welcome");
-  const [imagesCurrGame, setImagesCurrGame] = useState([...images]);
   const [actualImg, setActualImg] = useState(undefined);
 
   const [score, setScore] = useState(0);
@@ -30,58 +29,55 @@ function App() {
       setBestScore(score);
       window.localStorage.setItem("bestScore", JSON.stringify(score));
     }
-    setActualImg(undefined)
-    setImagesCurrGame([...images])
     setGameStatus("game-over");
   }, [score, bestScore])
 
-  const selectNextImg = useCallback(() => {
-
-    if (imagesCurrGame.length > 0) {
-      const randImgIndex = Math.floor(Math.random() * (imagesCurrGame.length));
-
-      setActualImg(imagesCurrGame[randImgIndex]);
-      setImagesCurrGame(prev => {
-        prev.splice(randImgIndex, 1)
-        return prev
-      })
-
-      const bestScoreStored = window.localStorage.getItem("bestScore")
-      bestScoreStored && setBestScore(bestScoreStored);
-
-    }
-
-    if (imagesCurrGame.length === 1 || imagesCurrGame.length === 1) {
-      endGame();
-    }
-  }, [imagesCurrGame, endGame])
-
   useEffect(() => {
+    const selectNextImg = async () => {
+
+      if (Math.random() > 0.5) {
+
+        const randImgIndex = Math.floor(Math.random() * (images.length));
+        setActualImg(images[randImgIndex].name);
+        const bestScoreStored = window.localStorage.getItem("bestScore")
+        bestScoreStored && setBestScore(bestScoreStored);
+
+      }
+      else {
+        const response = await fetch("https://openaccess-api.clevelandart.org/api/artworks/?q=song%20xu&skip=2&limit=1&indent=1");
+        const data = await response.json();
+        const urlImg = data.data[0].images.web.url
+        setActualImg(urlImg)
+
+      }
+
+    }
     if (actualImg === undefined) selectNextImg();
 
-  }, [actualImg, selectNextImg]);
+  }, [actualImg]);
 
 
 
   const btnIaNotIaHadler = (e) => {
 
-    if (actualImg.type === e.target.id) {
+    if (
+      (actualImg.includes("images") && e.target.id === "ai") ||
+      (!actualImg.includes("images") && e.target.id === "not-ai")
+    ) {
       setScore((prev) => prev + 1);
-      selectNextImg();
+      setActualImg(undefined)
       return;
     }
     endGame();
 
   }
-
-
   return (
     <div>
       <NavBar score={score} bestScore={bestScore} />
 
       <main className="flex flex-col items-center justify-center p-10 bg-gray-300 backdrop-blur-sm">
         <img
-          src={`images/${actualImg?.name}`}
+          src={actualImg}
           alt="initialImg"
           className="sm:max-w-2xl"
         />
@@ -94,14 +90,14 @@ function App() {
           gap-2
         ">
           <button
-            id="ia"
+            id="ai"
             className={btnIA}
             onClick={btnIaNotIaHadler}
           >
             IA
           </button>
           <button
-            id="not-ia"
+            id="not-ai"
             className={btnNotIA}
             onClick={btnIaNotIaHadler}
           >
@@ -118,7 +114,10 @@ function App() {
           />
         }
         {gameStatus === "welcome" &&
-          <Modal modalStatus={"welcome"} setGameStatus={setGameStatus} />
+          <Modal
+            modalStatus={"welcome"}
+            setGameStatus={setGameStatus}
+          />
         }
       </main >
 
