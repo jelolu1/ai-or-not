@@ -1,14 +1,16 @@
-import { modelContent } from "../styles/components-styles"
+import { modelContent } from "../styles/components-styles";
 
-export default function Modal({ setGameStatus, modalStatus, score, bestScore, setScore }) {
+export default function Modal({ setGameStatus, modalStatus, score, bestScore, setScore, setBestScore }) {
+
+
     return (
         <div className="
-        flex justify-center items-center 
-        opacity-1
-        fixed top-0 left-0
-         w-full
-         h-full
-         backdrop-blur-sm
+            flex justify-center items-center 
+            opacity-1
+            fixed top-0 left-0
+            w-full
+            h-full
+            backdrop-blur-sm
         ">
 
             {modalStatus === "welcome" &&
@@ -25,6 +27,12 @@ export default function Modal({ setGameStatus, modalStatus, score, bestScore, se
                         onClick={() => setGameStatus("playing")}
                     >
                         Play
+                    </button>
+                    <button
+                        className={`font-medium text-3xl`}
+                        onClick={() => setBestScore(0)}
+                    >
+                        Reset Best Score
                     </button>
                 </div >
             }
@@ -53,6 +61,12 @@ export default function Modal({ setGameStatus, modalStatus, score, bestScore, se
                         }}
                     >
                         Play Again
+                    </button>
+                    <button
+                        className={`font-medium text-3xl`}
+                        onClick={() => setBestScore(0)}
+                    >
+                        Reset Best Score
                     </button>
                 </div>
             }

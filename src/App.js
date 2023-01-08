@@ -3,16 +3,29 @@ import Modal from "./components/Modal";
 import NavBar from "./components/NavBar";
 import { btnIA, btnNotIA } from "./styles/components-styles";
 
-const images = [
+const imagesAI = [
   {
     id: 0,
-    name: "images/ai-renaissance-painting-of-a-woman.png",
-    type: "ia",
+    url: "images/ai-renaissance-painting-of-a-woman.png",
+    type: "ai",
   },
   {
     id: 1,
-    name: "images/ai-il_1588xN.2811472517_o01v.webp",
-    type: "ia",
+    url: "images/ai-il_1588xN.2811472517_o01v.webp",
+    type: "ai",
+  }
+]
+
+const imagesNotAI = [
+  {
+    id: 0,
+    url: "https://openaccess-cdn.clevelandart.org/1998.78.14/1998.78.14_web.jpg",
+    type: "not-ai",
+  },
+  {
+    id: 1,
+    url: "https://piction.clevelandart.org/cma/ump.di?e=032AD180D21FF43121B04BF457E32E4038160C2F53B3B3D8BB23B6A0F162378D&s=24247294&se=1513541571&v=0&f=1998.78det02_w.jpg",
+    type: "not-ai",
   }
 ]
 
@@ -23,52 +36,38 @@ function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
 
-
-  const endGame = useCallback(() => {
-    if (score > bestScore) {
-      setBestScore(score);
-      window.localStorage.setItem("bestScore", JSON.stringify(score));
-    }
-    setGameStatus("game-over");
-  }, [score, bestScore])
-
   useEffect(() => {
     const selectNextImg = async () => {
 
-      if (Math.random() > 0.5) {
-
-        const randImgIndex = Math.floor(Math.random() * (images.length));
-        setActualImg(images[randImgIndex].name);
-        const bestScoreStored = window.localStorage.getItem("bestScore")
-        bestScoreStored && setBestScore(bestScoreStored);
-
-      }
-      else {
-        const response = await fetch("https://openaccess-api.clevelandart.org/api/artworks/?q=song%20xu&skip=2&limit=1&indent=1");
-        const data = await response.json();
-        const urlImg = data.data[0].images.web.url
-        setActualImg(urlImg)
-
-      }
+      const imgArray = Math.random() > 0.5 ? imagesAI : imagesNotAI
+      const randImgIndex = Math.floor(Math.random() * (imgArray.length));
+      setActualImg(imgArray[randImgIndex]);
 
     }
     if (actualImg === undefined) selectNextImg();
 
   }, [actualImg]);
 
+  useEffect(() => {
+    window.localStorage.setItem("bestScore", bestScore);
+  }, [bestScore])
 
+  useEffect(() => {
+    const bestScoreStored = window.localStorage.getItem("bestScore")
+    bestScoreStored && setBestScore(bestScoreStored);
+  }, [])
 
   const btnIaNotIaHadler = (e) => {
 
-    if (
-      (actualImg.includes("images") && e.target.id === "ai") ||
-      (!actualImg.includes("images") && e.target.id === "not-ai")
-    ) {
+    if (e.target.id === actualImg.type) {
       setScore((prev) => prev + 1);
       setActualImg(undefined)
       return;
     }
-    endGame();
+    if (score > bestScore) {
+      setBestScore(score);
+    }
+    setGameStatus("game-over");
 
   }
   return (
@@ -77,7 +76,7 @@ function App() {
 
       <main className="flex flex-col items-center justify-center p-10 bg-gray-300 backdrop-blur-sm">
         <img
-          src={actualImg}
+          src={actualImg?.url}
           alt="initialImg"
           className="sm:max-w-2xl"
         />
@@ -117,6 +116,7 @@ function App() {
           <Modal
             modalStatus={"welcome"}
             setGameStatus={setGameStatus}
+            setBestScore={setBestScore}
           />
         }
       </main >
