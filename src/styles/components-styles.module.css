@@ -1,0 +1,22 @@
+.nav-element:hover{
+    color: rgb(241 245 249);
+}
+
+.button-ia{
+    transition: color .3s ease-in-out, box-shadow .3s ease-in-out; 
+}
+
+
+.button-ia:hover{
+    color: rgb(241 245 249);
+    box-shadow: inset  -120px 0 0 0  rgb(37 99 235);
+}
+
+.button-notia{
+    transition: color .3s ease-in-out, box-shadow .3s ease-in-out; 
+}
+
+.button-notia:hover{
+    color: rgb(241 245 249);
+    box-shadow: inset 120px 0 0 0 rgb(220 38 38);
+}
