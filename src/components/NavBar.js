@@ -1,7 +1,7 @@
 import { navElement } from "../styles/components-styles";
 
 
-export default function NavBar() {
+export default function NavBar({ score, bestScore }) {
 
 
     return (
@@ -21,7 +21,10 @@ export default function NavBar() {
 
             </a>
             <p className={`font-medium text-2xl`}>
-                Best Score: <span>0</span>
+                Actual Score: <span>{score}</span>
+            </p>
+            <p className={`font-medium text-2xl`}>
+                Best Score: <span>{bestScore}</span>
             </p>
 
 
