@@ -21,3 +21,13 @@ py-1 px-6
 mt-0 ml-10
 ${classes["btn-not-ia"]}
 `
+
+export const modelContent = `
+relative
+p-10
+rounded-lg
+bg-gray-800
+text-slate-100
+flex flex-col justify-center items-center
+gap-10
+`
